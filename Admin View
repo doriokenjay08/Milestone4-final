@@ -1,0 +1,161 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Scanner;
+
+public class AdminView {
+
+    public static void showAdminView(Connection conn, Scanner sc) {
+
+        while (true) {
+            System.out.println("\n=== ADMIN DASHBOARD ===");
+            System.out.println("1. View All Users");
+            System.out.println("2. View All Pets");
+            System.out.println("3. View All Reservations");
+            System.out.println("4. View All Sessions");
+            System.out.println("5. View All Incidents");
+            System.out.println("6. Back");
+            System.out.print("Choice: ");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    viewAllUsers(conn);
+                    break;
+
+                case 2:
+                viewAllPets(conn);
+                    break;
+
+                case 3:
+                    viewAllReservations(conn);
+                    break;
+
+                case 4:
+                    viewAllSessions(conn);
+                    break;
+
+                case 5:
+                    viewAllIncidents(conn);
+                    break;
+
+                case 6:
+                    return;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    // ---------------- USERS ----------------
+    private static void viewAllUsers(Connection conn) {
+    try {
+        String sql = "SELECT id, username FROM users";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("\n--- USERS ---");
+        while (rs.next()) {
+            System.out.println(
+                "ID: "       + rs.getInt("id") +
+                " | Username: " + rs.getString("username")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    // ---------------- PETS ----------------
+    private static void viewAllPets(Connection conn) {
+    try {
+        String sql = "SELECT id, pet_name, user_id, typeOfPet FROM pets";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("\n--- PETS ---");
+        while (rs.next()) {
+            System.out.println(
+                "Pet ID: "   + rs.getInt("id") +
+                " | Name: "  + rs.getString("pet_name") +
+                " | Owner: " + rs.getInt("user_id") +
+                " | Type: "  + rs.getString("typeOfPet")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    // ---------------- RESERVATIONS ----------------
+    private static void viewAllReservations(Connection conn) {
+        try {
+            String sql = "SELECT reservation_id, user_id, pet_id, status FROM reservations";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            System.out.println("\n--- RESERVATIONS ---");
+            while (rs.next()) {
+                System.out.println(
+                    "Reservation ID: " + rs.getInt("reservation_id") +
+                    " | User ID: " + rs.getInt("user_id") +
+                    " | Pet ID: " + rs.getInt("pet_id") +
+                    " | Status: " + rs.getString("status")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ---------------- SESSIONS ----------------
+    private static void viewAllSessions(Connection conn) {
+    try {
+        String sql = "SELECT id, pet_id, check_in, check_out FROM sessions";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("\n--- SESSIONS ---");
+        while (rs.next()) {
+            System.out.println(
+                "Session ID: "  + rs.getInt("id") +
+                " | Pet ID: "   + rs.getInt("pet_id") +
+                " | Check In: " + rs.getString("check_in") +
+                " | Check Out: "+ rs.getString("check_out")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    // ---------------- INCIDENTS ----------------
+  private static void viewAllIncidents(Connection conn) {
+    try {
+        String sql = "SELECT id, pet_id, description, date FROM incidents";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("\n--- INCIDENTS ---");
+        while (rs.next()) {
+            System.out.println(
+                "Incident ID: "  + rs.getInt("id") +
+                " | Pet ID: "    + rs.getInt("pet_id") +
+                " | Date: "      + rs.getString("date") +
+                " | Description: " + rs.getString("description")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+}
