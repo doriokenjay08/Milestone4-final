@@ -1,0 +1,73 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class Vaccination {
+
+    public static void addVaccination(
+            Connection conn,
+            Scanner sc) throws SQLException {
+
+        System.out.print("Pet ID: ");
+        int petId = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Vaccine Name: ");
+        String vaccine = sc.nextLine();
+
+        System.out.print("Vaccination Date: ");
+        String date = sc.nextLine();
+
+        String sql =
+            "INSERT INTO vaccinations " +
+            "(pet_id, vaccine_name, vaccination_date) " +
+            "VALUES (?, ?, ?)";
+
+        PreparedStatement pst =
+            conn.prepareStatement(sql);
+
+        pst.setInt(1, petId);
+        pst.setString(2, vaccine);
+        pst.setString(3, date);
+
+        pst.executeUpdate();
+
+        System.out.println("Vaccination Record Added!");
+    }
+
+    public static void viewVaccinations(
+            Connection conn,
+            int userId) throws SQLException {
+
+        String sql =
+            "SELECT v.*, p.pet_name " +
+            "FROM vaccinations v " +
+            "JOIN pets p ON v.pet_id = p.id " +
+            "WHERE p.user_id = ?";
+
+        PreparedStatement pst =
+            conn.prepareStatement(sql);
+
+        pst.setInt(1, userId);
+
+        ResultSet rs = pst.executeQuery();
+
+        System.out.println("\n=== VACCINATION RECORDS ===");
+
+        while(rs.next()) {
+
+            System.out.println(
+                "Pet Name: " +
+                rs.getString("pet_name"));
+
+            System.out.println(
+                "Vaccine: " +
+                rs.getString("vaccine_name"));
+
+            System.out.println(
+                "Date: " +
+                rs.getString("vaccination_date"));
+
+            System.out.println("-------------------------");
+        }
+    }
+}
