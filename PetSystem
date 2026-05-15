@@ -1,0 +1,147 @@
+import java.sql.*;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class PetSystem {
+
+    static Connection conn;
+    static int currentUserId = -1;
+
+    public static void main(String[] args) {
+
+        try {
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            String url = "jdbc:mysql://localhost:3306/pet_system";
+            String user = "root";
+            String pass = "root";
+
+            conn = DriverManager.getConnection(url, user, pass);
+
+            Scanner sc = new Scanner(System.in);
+
+            while (true) {
+
+                try {
+
+                    System.out.println("\n=== PET SYSTEM ===");
+                    System.out.println("1. Register Account");
+                    System.out.println("2. Login");
+                    System.out.println("3. Register Pet");
+                    System.out.println("4. Monitor Session");
+                    System.out.println("5. Log Incident");
+                    System.out.println("6. View My Pets");
+                    System.out.println("7. View My Sessions");
+                    System.out.println("8. View My Incidents");
+                    System.out.println("9. Make Reservation");
+                    System.out.println("10. View My Reservations");
+                    System.out.println("11. Pay Reservation");
+                    System.out.println("12. Vaccination Add");
+                    System.out.println("13. View Vaccinations");
+                    System.out.println("14. Admin View");
+                    System.out.println("15. Logout");
+                    System.out.println("16. Exit");
+
+                    System.out.print("Choice: ");
+
+                    int choice = sc.nextInt();
+                    sc.nextLine();
+
+                    switch (choice) {
+
+                        case 1:
+
+                            RegisterAccount.register(conn, sc);
+                            break;
+
+                        case 2:
+
+                            currentUserId = Login.login(conn, sc);
+                            break;
+
+                        case 3:
+
+                            if (currentUserId != -1)
+                                RegisterPet.register(conn, sc, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 4:
+
+                            if (currentUserId != -1)
+                                MonitorSession.record(conn, sc);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 5:
+
+                            if (currentUserId != -1)
+                                LogIncident.record(conn, sc);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 6:
+
+                            if (currentUserId != -1)
+                                RegisterPet.viewMyPets(conn, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 7:
+
+                            if (currentUserId != -1)
+                                MonitorSession.viewMySessions(conn, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 8:
+
+                            if (currentUserId != -1)
+                                LogIncident.viewMyLogIncidents(conn, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 9:
+
+                            if (currentUserId != -1)
+                                Reservation.reserve(conn, sc, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 10:
+
+                            if (currentUserId != -1)
+                                Reservation.viewMyReservations(conn, currentUserId);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 11:
+
+                            if (currentUserId != -1)
+                                Payment.pay(conn, sc);
+                            else
+                                System.out.println("Please login first!");
+
+                            break;
+
+                        case 12:
+
+                            if (currentUserId != -1)
+                                Vaccination.addVaccination(conn, sc);
