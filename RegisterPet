@@ -1,0 +1,46 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class RegisterPet {
+    public static void register(Connection conn, Scanner sc, int userId) throws SQLException {
+        System.out.print("Pet Name: ");
+        String pet = sc.nextLine();
+
+        System.out.print("Type: ");
+        String typeOfPet = sc.nextLine();
+
+        System.out.print("Breed: ");
+        String breed = sc.nextLine();
+
+        System.out.print("Age: ");
+        int age = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Emergency Contact: ");
+        String contact = sc.nextLine();
+
+        String sql = "INSERT INTO pets (user_id, pet_name, typeOfPet) VALUES (?, ?, ?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, userId);
+        pst.setString(2, pet);
+        pst.setString(3, typeOfPet);
+        pst.executeUpdate();
+
+        System.out.println("Pet Registered!");
+    }
+    public static void viewMyPets(Connection conn, int userId) throws SQLException{
+        String sql = "SELECT * FROM pets WHERE user_id = ?";
+
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, userId);
+
+        ResultSet rs = pst.executeQuery();
+        System.out.println("\n=== MY PETS ===");
+        while (rs.next()) {
+            System.out.println("ID: " + rs.getInt("id"));
+            System.out.println("Name: " + rs.getString("pet_name"));
+            System.out.println("Type: " + rs.getString("type"));
+            System.out.println("-------------------------------------");
+        }
+    }
+}
