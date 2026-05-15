@@ -1,0 +1,27 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class Login {
+    public static int login(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Username: ");
+        String user = sc.nextLine();
+
+        System.out.print("Password: ");
+        String pass = sc.nextLine();
+
+        String sql = "SELECT * FROM users WHERE username=? AND password=?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user);
+        pst.setString(2, pass);
+
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            System.out.println("Login Successful!");
+            return rs.getInt("id"); // return user id
+        } else {
+            System.out.println("Invalid credentials!");
+            return -1;
+        }
+    }
+}
