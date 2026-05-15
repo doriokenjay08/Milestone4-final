@@ -1,0 +1,108 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class Reservation {
+
+    public static void reserve(Connection conn, Scanner sc, int userId) throws SQLException {
+
+        System.out.print("Pet ID: ");
+        int petId = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("=== SERVICES ===");
+        System.out.println("1. Grooming - PHP 500");
+        System.out.println("2. Boarding - PHP 1200");
+        System.out.println("3. Vet Checkup - PHP 800");
+        System.out.println("4. Daycare - PHP 400");
+
+        System.out.print("Choose Service: ");
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        String service = "";
+        double price = 0;
+
+        switch(choice) {
+            case 1: service = "Grooming"; price = 500; break;
+            case 2: service = "Boarding"; price = 1200; break;
+            case 3: service = "Vet Checkup"; price = 800; break;
+            case 4: service = "Daycare"; price = 400; break;
+            default:
+                System.out.println("Invalid Service!");
+                return;
+        }
+
+        System.out.print("Reservation Date (YYYY-MM-DD): ");
+        String date = sc.nextLine();
+
+        System.out.print("Reservation Time (HH:MM in 24-hour format): ");
+        String time = sc.nextLine();
+
+        // 🔥 STEP 1: CHECK DUPLICATE SLOT
+        String checkSql =
+            "SELECT * FROM reservations WHERE reservation_date = ? AND reservation_time = ?";
+
+        PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+        checkStmt.setString(1, date);
+        checkStmt.setString(2, time);
+
+        ResultSet rs = checkStmt.executeQuery();
+
+        if (rs.next()) {
+            System.out.println("Slot already taken! Please choose another date/time.");
+            return;
+        }
+
+        // 🔥 STEP 2: INSERT IF AVAILABLE
+        String sql =
+            "INSERT INTO reservations " +
+            "(user_id, pet_id, service_type, reservation_date, reservation_time, status, price) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        PreparedStatement pst = conn.prepareStatement(sql);
+
+        pst.setInt(1, userId);
+        pst.setInt(2, petId);
+        pst.setString(3, service);
+        pst.setString(4, date);
+        pst.setString(5, time);
+        pst.setString(6, "Pending");
+        pst.setDouble(7, price);
+
+        pst.executeUpdate();
+
+        System.out.println("Reservation Successful!");
+        System.out.println("Service: " + service);
+        System.out.println("Total Price: PHP " + price);
+    }
+
+    // ---------------- VIEW ----------------
+    public static void viewMyReservations(Connection conn, int userId)
+            throws SQLException {
+
+        String sql =
+            "SELECT r.*, p.pet_name " +
+            "FROM reservations r " +
+            "JOIN pets p ON r.pet_id = p.id " +
+            "WHERE r.user_id = ?";
+
+        PreparedStatement pst = conn.prepareStatement(sql);
+
+        pst.setInt(1, userId);
+
+        ResultSet rs = pst.executeQuery();
+
+        System.out.println("\n=== MY RESERVATIONS ===");
+
+        while(rs.next()) {
+
+            System.out.println("Pet Name: " + rs.getString("pet_name"));
+            System.out.println("Service: " + rs.getString("service_type"));
+            System.out.println("Date: " + rs.getString("reservation_date"));
+            System.out.println("Time: " + rs.getString("reservation_time"));
+            System.out.println("Status: " + rs.getString("status"));
+            System.out.println("Price: PHP " + rs.getDouble("price"));
+            System.out.println("-----------------------");
+        }
+    }
+}
