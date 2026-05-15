@@ -1,0 +1,43 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class MonitorSession {
+    public static void record(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Pet ID: ");
+        int petId = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Check-in time: ");
+        String in = sc.nextLine();
+
+        System.out.print("Check-out time: ");
+        String out = sc.nextLine();
+
+        String sql = "INSERT INTO sessions (pet_id, check_in, check_out) VALUES (?, ?, ?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, petId);
+        pst.setString(2, in);
+        pst.setString(3, out);
+        pst.executeUpdate();
+
+        System.out.println("Session Recorded!");
+    }
+
+    public static void viewMySessions(Connection conn, int userId) throws SQLException {
+    String sql = "SELECT s.*, p.pet_name FROM sessions s " +
+                 "JOIN pets p ON s.pet_id = p.id " +
+                 "WHERE p.user_id = ?";
+                 
+    PreparedStatement pst = conn.prepareStatement(sql);
+    pst.setInt(1, userId);
+    ResultSet rs = pst.executeQuery();
+
+    System.out.println("\n=== MY SESSIONS ===");
+    while (rs.next()) {
+        System.out.println("Pet Name: " + rs.getString("pet_name"));
+        System.out.println("Check-in: " + rs.getString("check_in"));
+        System.out.println("Check-out: " + rs.getString("check_out"));
+        System.out.println("-------------------");
+    }
+}
+}
