@@ -1,0 +1,20 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class RegisterAccount {
+    public static void register(Connection conn, Scanner sc) throws SQLException {
+        System.out.print("Username: ");
+        String user = sc.nextLine();
+
+        System.out.print("Password: ");
+        String pass = sc.nextLine();
+
+        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, user);
+        pst.setString(2, pass);
+        pst.executeUpdate();
+
+        System.out.println("Account Registered!");
+    }
+}
