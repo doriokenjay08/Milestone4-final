@@ -1,0 +1,34 @@
+public static void approveRejectReservation(Connection conn, Scanner sc) {
+
+        try {
+
+            System.out.print("Enter Reservation ID: ");
+            int reservationId = sc.nextInt();
+            sc.nextLine();
+
+            System.out.print("Enter Status (Approved/Rejected): ");
+            String status = sc.nextLine();
+
+            String sql = "UPDATE reservations SET status = ? WHERE reservation_id = ?";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(1, status);
+            ps.setInt(2, reservationId);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+
+                System.out.println("Reservation updated successfully!");
+
+            } else {
+
+                System.out.println("Reservation not found.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
